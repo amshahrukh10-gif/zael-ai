@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zael AI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #070b14;
+  --surface: #0d1424;
+  --surface2: #121c30;
+  --surface3: #1a2540;
+  --border: #1e2e4a;
+  --accent: #00c8ff;
+  --accent2: #7b5fff;
+  --accent3: #00ffb3;
+  --danger: #ff4f7b;
+  --text: #dce8ff;
+  --muted: #4a6080;
+  --glow: rgba(0,200,255,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Starfield background */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(0,200,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(123,95,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(0,255,179,0.03) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+/* ========== PAGES ========== */
+.page { display:none; height:100vh; flex-direction:column; position:relative; z-index:1; }
+.page.active { display:flex; }
+
+/* ========== HOME / DASHBOARD ========== */
+#home {
+  overflow-y: auto;
+  padding: 0;
+}
+
+#home::-webkit-scrollbar { width:4px; }
+#home::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+/* Nav */
+nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 18px 32px;
+  background: rgba(7,11,20,0.8);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  position:sticky; top:0; z-index:50;
+}
+
+.nav-logo {
+  display:flex; align-items:center; gap:10px;
+  font-family:'Orbitron',monospace; font-weight:700; font-size:20px;
+  letter-spacing:2px;
+}
+
+.nav-logo .z-icon {
+  width:38px; height:38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:900;
+  box-shadow: 0 0 20px rgba(0,200,255,0.5);
+  animation: logoGlow 3s ease-in-out infinite;
+  color: #fff;
+  font-family:'Orbitron',monospace;
+}
+
+@keyframes logoGlow {
+  0%,100% { box-shadow: 0 0 20px rgba(0,200,255,0.4); }
+  50% { box-shadow: 0 0 40px rgba(0,200,255,0.8), 0 0 80px rgba(0,200,255,0.2); }
+}
+
+.nav-logo span.ai-text { color: var(--accent); }
+
+.nav-status {
+  display:flex; align-items:center; gap:6px;
+  background: rgba(0,255,179,0.08);
+  border: 1px solid rgba(0,255,179,0.2);
+  border-radius:20px; padding:5px 14px;
+  font-size:11px; font-family:'Orbitron',monospace;
+  color: var(--accent3); letter-spacing:1px;
+}
+
+.nav-status .dot {
+  width:6px; height:6px; background:var(--accent3);
+  border-radius:50%; animation:blink 1.5s infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.nav-cta {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border:none; border-radius:10px; color:#fff;
+  padding:9px 20px; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+  box-shadow: 0 4px 20px rgba(0,200,255,0.3);
+  letter-spacing:0.5px;
+}
+
+.nav-cta:hover { transform:translateY(-1px); box-shadow: 0 6px 30px rgba(0,200,255,0.5); }
+
+/* Hero */
+.hero {
+  text-align:center;
+  padding: 80px 32px 60px;
+  position:relative;
+}
+
+.hero-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  background: rgba(0,200,255,0.08);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius:20px; padding:6px 16px;
+  font-size:11px; font-family:'Orbitron',monospace;
+  color:var(--accent); letter-spacing:1px;
+  margin-bottom:28px;
+}
+
+.hero h1 {
+  font-family:'Orbitron',monospace;
+  font-size: clamp(36px, 6vw, 68px);
+  font-weight:900; line-height:1.05;
+  letter-spacing:-1px; margin-bottom:20px;
+}
+
+.hero h1 .name {
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation: gradShift 4s ease-in-out infinite;
+  background-size:200%;
+}
+
+@keyframes gradShift {
+  0%,100% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+}
+
+.hero p {
+  color:var(--muted); font-size:17px; max-width:500px;
+  margin:0 auto 40px; line-height:1.7; font-weight:300;
+}
+
+.hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border:none; border-radius:12px; color:#fff;
+  padding:14px 32px; font-size:15px; font-weight:600;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+  box-shadow: 0 6px 30px rgba(0,200,255,0.35);
+  display:flex; align-items:center; gap:8px;
+}
+
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 40px rgba(0,200,255,0.5); }
+
+.btn-ghost {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius:12px; color:var(--text);
+  padding:14px 28px; font-size:15px; font-weight:500;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); background:rgba(0,200,255,0.05); }
+
+/* Stats */
+.stats {
+  display:flex; justify-content:center; gap:0;
+  margin: 0 32px 60px;
+}
+
+.stat-item {
+  flex:1; max-width:200px;
+  text-align:center; padding:28px 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  position:relative; overflow:hidden;
+}
+
+.stat-item::before {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+.stat-item:hover::before { opacity:1; }
+.stat-item:first-child { border-radius:14px 0 0 14px; }
+.stat-item:last-child { border-radius:0 14px 14px 0; }
+
+.stat-num {
+  font-family:'Orbitron',monospace; font-size:30px; font-weight:900;
+  color:var(--accent); display:block; margin-bottom:4px;
+}
+
+.stat-label { font-size:12px; color:var(--muted); font-weight:500; }
+
+/* Features grid */
+.section {
+  padding: 0 32px 60px;
+  max-width:1100px; margin:0 auto; width:100%;
+}
+
+.section-title {
+  font-family:'Orbitron',monospace; font-size:13px;
+  letter-spacing:3px; color:var(--accent); text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+.section-h2 {
+  font-size:28px; font-weight:700; margin-bottom:32px;
+  line-height:1.2;
+}
+
+.features-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius:16px; padding:24px;
+  transition:all 0.25s; cursor:default;
+  position:relative; overflow:hidden;
+}
+
+.feature-card::after {
+  content:''; position:absolute;
+  bottom:0; left:0; right:0; height:2px;
+  background: var(--card-accent, var(--accent));
+  transform:scaleX(0); transform-origin:left;
+  transition:transform 0.3s;
+}
+
+.feature-card:hover { border-color:var(--border); transform:translateY(-3px); background:var(--surface2); }
+.feature-card:hover::after { transform:scaleX(1); }
+
+.card-icon {
+  width:48px; height:48px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; margin-bottom:16px;
+  background: var(--card-bg, rgba(0,200,255,0.1));
+  border: 1px solid var(--card-border, rgba(0,200,255,0.2));
+}
+
+.feature-card h3 { font-size:16px; font-weight:600; margin-bottom:8px; }
+.feature-card p { font-size:13px; color:var(--muted); line-height:1.6; }
+
+/* CTA section */
+.cta-section {
+  margin: 0 32px 60px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius:20px; padding:50px 40px;
+  text-align:center;
+  position:relative; overflow:hidden;
+}
+
+.cta-section::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,200,255,0.05) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.cta-section h2 { font-family:'Orbitron',monospace; font-size:26px; margin-bottom:12px; }
+.cta-section p { color:var(--muted); margin-bottom:28px; }
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--border);
+  padding:20px 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:12px; color:var(--muted); font-family:'Orbitron',monospace;
+}
+
+/* ========== CHAT PAGE ========== */
+#chat-page {
+  height:100vh;
+  flex-direction:column;
+}
+
+.chat-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px;
+  background: rgba(7,11,20,0.9);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter:blur(20px);
+  z-index:50; flex-shrink:0;
+}
+
+.chat-logo {
+  display:flex; align-items:center; gap:10px;
+  font-family:'Orbitron',monospace; font-size:16px; font-weight:700; letter-spacing:2px;
+}
+
+.chat-logo .z-icon {
+  width:34px; height:34px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; font-weight:900; color:#fff;
+  font-family:'Orbitron',monospace;
+  box-shadow:0 0 15px rgba(0,200,255,0.4);
+  animation:logoGlow 3s ease-in-out infinite;
+}
+
+.chat-logo span.ai-text { color:var(--accent); }
+
+.chat-header-right { display:flex; align-items:center; gap:10px; }
+
+.home-btn {
+  display:flex; align-items:center; gap:6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius:9px; color:var(--muted);
+  padding:7px 14px; font-size:12px;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+
+.home-btn:hover { color:var(--text); border-color:var(--accent); background:rgba(0,200,255,0.05); }
+
+.mem-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius:9px; color:var(--muted);
+  width:34px; height:34px;
+  cursor:pointer; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+
+.mem-btn:hover { color:var(--text); border-color:var(--accent2); }
+
+.clr-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius:9px; color:var(--muted);
+  width:34px; height:34px;
+  cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+
+.clr-btn:hover { color:var(--danger); border-color:var(--danger); }
+
+.online-pill {
+  display:flex; align-items:center; gap:5px;
+  background: rgba(0,255,179,0.08);
+  border: 1px solid rgba(0,255,179,0.2);
+  border-radius:20px; padding:4px 12px;
+  font-size:10px; color:var(--accent3);
+  font-family:'Orbitron',monospace; letter-spacing:1px;
+}
+
+/* Chat body */
+#chat-body {
+  flex:1; overflow-y:auto;
+  padding:20px 24px;
+  display:flex; flex-direction:column; gap:14px;
+  scroll-behavior:smooth;
+}
+
+#chat-body::-webkit-scrollbar { width:3px; }
+#chat-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* Welcome screen inside chat */
+#chat-welcome {
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  height:100%; gap:22px; text-align:center;
+}
+
+.cw-icon {
+  width:80px; height:80px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius:24px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; font-family:'Orbitron',monospace; font-weight:900; color:#fff;
+  box-shadow:0 0 40px rgba(0,200,255,0.5);
+  animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-10px); }
+}
+
+.cw-title { font-family:'Orbitron',monospace; font-size:24px; font-weight:800; letter-spacing:1px; }
+.cw-title span { color:var(--accent); }
+.cw-sub { color:var(--muted); font-size:14px; max-width:380px; line-height:1.7; }
+
+.suggestions {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:520px;
+}
+
+.chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius:20px; padding:8px 15px;
+  font-size:12px; cursor:pointer; color:var(--muted);
+  transition:all 0.2s; font-weight:500;
+}
+
+.chip:hover { border-color:var(--accent); color:var(--text); background:rgba(0,200,255,0.07); transform:translateY(-1px); }
+
+/* Messages */
+.msg { display:flex; gap:10px; animation:msgIn 0.3s ease; max-width:820px; }
+
+@keyframes msgIn {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.msg.user { flex-direction:row-reverse; align-self:flex-end; }
+.msg.ai { align-self:flex-start; }
+
+.av {
+  width:32px; height:32px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+  font-family:'Orbitron',monospace; font-weight:700;
+}
+
+.msg.ai .av {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#fff; font-size:13px;
+  box-shadow:0 0 12px rgba(0,200,255,0.3);
+}
+
+.msg.user .av {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+
+.bubble {
+  padding:11px 15px; border-radius:13px;
+  max-width:68vw; line-height:1.65; font-size:14px;
+}
+
+.msg.ai .bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top-left-radius:3px;
+}
+
+.msg.user .bubble {
+  background: rgba(0,200,255,0.08);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-top-right-radius:3px;
+  color:#c8e8ff;
+}
+
+.bubble pre {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  border-radius:8px; padding:12px;
+  overflow-x:auto; margin:8px 0;
+  font-family:monospace; font-size:12px;
+}
+
+.bubble code {
+  background: rgba(0,200,255,0.1);
+  padding:1px 5px; border-radius:4px;
+  font-family:monospace; font-size:12px; color:var(--accent3);
+}
+
+.msg-time {
+  font-size:10px; color:var(--muted); margin-top:4px;
+  padding:0 4px; font-family:monospace;
+}
+
+/* Typing */
+.typing-wrap { display:flex; gap:10px; align-self:flex-start; animation:msgIn 0.3s ease; }
+
+.typing-bubble {
+  display:flex; align-items:center; gap:10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius:13px; border-top-left-radius:3px;
+  padding:11px 16px;
+}
+
+.dots { display:flex; gap:4px; }
+.dots span {
+  width:5px; height:5px; background:var(--accent);
+  border-radius:50%; animation:dot 1.2s ease-in-out infinite;
+}
+.dots span:nth-child(2) { animation-delay:0.2s; }
+.dots span:nth-child(3) { animation-delay:0.4s; }
+
+@keyframes dot {
+  0%,60%,100%{ transform:translateY(0); opacity:0.4; }
+  30%{ transform:translateY(-5px); opacity:1; }
+}
+
+/* Memory panel */
+#mem-panel {
+  display:none; position:fixed;
+  right:20px; top:65px; width:270px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px; padding:16px;
+  z-index:200; box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  animation:msgIn 0.2s ease;
+}
+
+#mem-panel h3 {
+  font-size:12px; font-family:'Orbitron',monospace;
+  letter-spacing:1px; color:var(--accent3); margin-bottom:12px;
+}
+
+.mem-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:7px 10px;
+  font-size:11px; color:var(--muted); margin-bottom:6px;
+  font-family:monospace; line-height:1.5;
+}
+
+.mem-item strong { color:var(--text); }
+
+.clr-mem {
+  width:100%; background:rgba(255,79,123,0.08);
+  border:1px solid rgba(255,79,123,0.2);
+  color:var(--danger); border-radius:8px;
+  padding:7px; font-size:11px; cursor:pointer;
+  font-family:monospace; margin-top:8px; transition:all 0.2s;
+}
+
+.clr-mem:hover { background:rgba(255,79,123,0.15); }
+
+/* Input */
+.input-zone {
+  padding:12px 24px 14px;
+  background: rgba(7,11,20,0.9);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+
+#fp {
+  display:none; flex-wrap:wrap; gap:6px; margin-bottom:8px;
+}
+
+.fchip {
+  display:flex; align-items:center; gap:5px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:7px; padding:4px 10px;
+  font-size:11px; color:var(--accent3); font-family:monospace;
+}
+
+.fchip button { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; transition:color 0.2s; }
+.fchip button:hover { color:var(--danger); }
+
+.irow { display:flex; gap:8px; align-items:flex-end; }
+
+.iactions { display:flex; gap:6px; }
+
+.ia-btn {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:9px; color:var(--muted);
+  width:44px; height:44px; cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; flex-shrink:0;
+}
+
+.ia-btn:hover { color:var(--text); border-color:var(--accent); background:rgba(0,200,255,0.07); }
+
+textarea {
+  flex:1; background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:11px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  padding:11px 15px; resize:none; outline:none;
+  min-height:44px; max-height:150px; line-height:1.5;
+  transition:border-color 0.2s;
+}
+
+textarea:focus { border-color:var(--accent); }
+textarea::placeholder { color:var(--muted); }
+
+.send-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border:none; border-radius:11px; color:#fff;
+  width:44px; height:44px; cursor:pointer; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; flex-shrink:0;
+  box-shadow:0 4px 20px rgba(0,200,255,0.35);
+}
+
+.send-btn:hover { transform:scale(1.06); box-shadow:0 4px 30px rgba(0,200,255,0.6); }
+.send-btn:active { transform:scale(0.95); }
+.send-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+.ihint {
+  text-align:center; font-size:10px; color:var(--muted);
+  margin-top:7px; font-family:monospace;
+}
+
+#fi { display:none; }
+
+/* System msg */
+.sysmsg {
+  text-align:center; font-size:10px; color:var(--muted);
+  font-family:monospace; padding:3px;
+}
+
+/* Error */
+.err { color:var(--danger); font-size:13px; }
+</style>
+</head>
+<body>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home" class="page active">
+
+  <nav>
+    <div class="nav-logo">
+      <div class="z-icon">Z</div>
+      ZAEL <span class="ai-text">AI</span>
+    </div>
+    <div class="nav-status"><div class="dot"></div> SYSTEM ONLINE</div>
+    <button class="nav-cta" onclick="goChat()">Launch Agent →</button>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-badge">⚡ Next-Gen AI Agent</div>
+    <h1>Meet <span class="name">Zael AI</span><br>Your Personal Agent</h1>
+    <p>A powerful AI companion with memory, web search, code execution, and file analysis — built for you.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="goChat()">🚀 Start Chatting</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See Features ↓</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Conversations</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">5+</span>
+      <span class="stat-label">Core Features</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">24/7</span>
+      <span class="stat-label">Always Online</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">0ms</span>
+      <span class="stat-label">Setup Required</span>
+    </div>
+  </div>
+
+  <div class="section" id="features">
+    <div class="section-title">What Zael Can Do</div>
+    <div class="section-h2">Packed with powerful features</div>
+    <div class="features-grid">
+
+      <div class="feature-card" style="--card-accent:var(--accent);--card-bg:rgba(0,200,255,0.08);--card-border:rgba(0,200,255,0.2)">
+        <div class="card-icon">💬</div>
+        <h3>Smart Chat</h3>
+        <p>Natural English conversations. Zael understands context, nuance, and keeps the conversation flowing.</p>
+      </div>
+
+      <div class="feature-card" style="--card-accent:var(--accent3);--card-bg:rgba(0,255,179,0.08);--card-border:rgba(0,255,179,0.2)">
+        <div class="card-icon">🧠</div>
+        <h3>Persistent Memory</h3>
+        <p>Zael remembers your name, preferences, and context throughout the entire session. It learns as you talk.</p>
+      </div>
+
+      <div class="feature-card" style="--card-accent:var(--accent2);--card-bg:rgba(123,95,255,0.08);--card-border:rgba(123,95,255,0.2)">
+        <div class="card-icon">🔍</div>
+        <h3>Live Web Search</h3>
+        <p>Searches the web in real-time to give you accurate, up-to-date answers on any topic.</p>
+      </div>
+
+      <div class="feature-card" style="--card-accent:#ffb800;--card-bg:rgba(255,184,0,0.08);--card-border:rgba(255,184,0,0.2)">
+        <div class="card-icon">⚡</div>
+        <h3>Code Expert</h3>
+        <p>Write, debug, explain, and optimize code in any language. From Python to JavaScript, Zael has you covered.</p>
+      </div>
+
+      <div class="feature-card" style="--card-accent:var(--danger);--card-bg:rgba(255,79,123,0.08);--card-border:rgba(255,79,123,0.2)">
+        <div class="card-icon">📎</div>
+        <h3>File Analysis</h3>
+        <p>Upload images, PDFs, code files, and text. Zael reads, analyzes, and answers questions about your files.</p>
+      </div>
+
+      <div class="feature-card" style="--card-accent:var(--accent);--card-bg:rgba(0,200,255,0.05);--card-border:rgba(0,200,255,0.15)">
+        <div class="card-icon">🌐</div>
+        <h3>Always Available</h3>
+        <p>No downloads. No setup. Just open the file in any browser and Zael is ready to assist you instantly.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <h2>Ready to meet <span style="color:var(--accent)">Zael?</span></h2>
+    <p>Your AI agent is waiting. Start a conversation right now.</p>
+    <button class="btn-primary" onclick="goChat()">🚀 Launch Zael AI</button>
+  </div>
+
+  <footer>
+    <span>ZAEL AI © 2025</span>
+    <span>Powered by Claude</span>
+    <span>v2.0</span>
+  </footer>
+
+</div>
+
+<!-- ===== CHAT PAGE ===== -->
+<div id="chat-page" class="page">
+
+  <!-- Memory panel -->
+  <div id="mem-panel">
+    <h3>🧠 AGENT MEMORY</h3>
+    <div id="mem-list"><div class="mem-item" style="color:var(--muted)">No memories yet...</div></div>
+    <button class="clr-mem" onclick="clearMemory()">🗑 Clear Memory</button>
+  </div>
+
+  <div class="chat-header">
+    <div class="chat-logo">
+      <div class="z-icon">Z</div>
+      ZAEL <span class="ai-text">AI</span>
+    </div>
+    <div class="chat-header-right">
+      <div class="online-pill"><div class="dot"></div> ONLINE</div>
+      <button class="mem-btn" onclick="toggleMem()" title="Memory">🧠</button>
+      <button class="clr-btn" onclick="clearChat()" title="Clear Chat">🗑</button>
+      <button class="home-btn" onclick="goHome()">🏠 Home</button>
+    </div>
+  </div>
+
+  <div id="chat-body">
+    <div id="chat-welcome">
+      <div class="cw-icon">Z</div>
+      <div class="cw-title">Hello! I'm <span>Zael AI</span></div>
+      <div class="cw-sub">Your personal AI agent — smart, fast, and always ready. Ask me anything, upload a file, or let me search the web for you.</div>
+      <div class="suggestions">
+        <div class="chip" onclick="suggest('My name is Shahrukh, remember it!')">👋 Introduce yourself</div>
+        <div class="chip" onclick="suggest('Write a Python function to sort a list')">💻 Write some code</div>
+        <div class="chip" onclick="suggest('What is quantum computing?')">🔍 Explain something</div>
+        <div class="chip" onclick="suggest('Tell me a cool fact about space')">🚀 Fun fact</div>
+        <div class="chip" onclick="suggest('Help me brainstorm startup ideas')">💡 Brainstorm ideas</div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fi" multiple accept="image/*,.pdf,.txt,.js,.py,.html,.css,.json,.md" onchange="handleFiles(this.files)">
+
+  <div class="input-zone">
+    <div id="fp" style="display:flex"></div>
+    <div class="irow">
+      <div class="iactions">
+        <button class="ia-btn" onclick="document.getElementById('fi').click()" title="Upload File">📎</button>
+      </div>
+      <textarea id="inp" placeholder="Ask Zael anything..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+        oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sbtn" onclick="send()">➤</button>
+    </div>
+    <div class="ihint">Enter = Send &nbsp;|&nbsp; Shift+Enter = New line &nbsp;|&nbsp; 🧠 Memory Active</div>
+  </div>
+
+</div>
+
+<script>
+// Page navigation
+function goChat() {
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('chat-page').classList.add('active');
+  document.getElementById('inp').focus();
+}
+
+function goHome() {
+  document.getElementById('chat-page').classList.remove('active');
+  document.getElementById('home').classList.add('active');
+  document.getElementById('mem-panel').style.display = 'none';
+}
+
+// State
+let memory = [], history = [], attachedFiles = [], isLoading = false;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 150) + 'px';
+}
+
+function suggest(t) {
+  document.getElementById('inp').value = t;
+  send();
+}
+
+// Memory
+function toggleMem() {
+  const p = document.getElementById('mem-panel');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+  renderMem();
+}
+
+function renderMem() {
+  const l = document.getElementById('mem-list');
+  l.innerHTML = memory.length === 0
+    ? '<div class="mem-item" style="color:var(--muted)">No memories yet...</div>'
+    : memory.map(m => `<div class="mem-item"><strong>${m.key}:</strong> ${m.value}</div>`).join('');
+}
+
+function clearMemory() {
+  memory = [];
+  renderMem();
+  sysMsg('🧠 Memory cleared.');
+}
+
+function clearChat() {
+  history = [];
+  const cb = document.getElementById('chat-body');
+  // Remove all children except chat-welcome
+  Array.from(cb.children).forEach(child => {
+    if (child.id !== 'chat-welcome') child.remove();
+  });
+  document.getElementById('chat-welcome').style.display = 'flex';
+}
+
+function sysMsg(t) {
+  const d = document.createElement('div');
+  d.className = 'sysmsg'; d.textContent = t;
+  document.getElementById('chat-body').appendChild(d);
+  scrollBottom();
+}
+
+function scrollBottom() {
+  const cb = document.getElementById('chat-body');
+  cb.scrollTop = cb.scrollHeight;
+}
+
+// Files
+function handleFiles(files) {
+  for (const f of files)
+    if (!attachedFiles.find(x => x.name === f.name)) attachedFiles.push(f);
+  renderFP();
+  document.getElementById('fi').value = '';
+}
+
+function renderFP() {
+  const fp = document.getElementById('fp');
+  fp.style.display = attachedFiles.length > 0 ? 'flex' : 'none';
+  fp.innerHTML = attachedFiles.map((f,i) =>
+    `<div class="fchip">📎 ${f.name}<button onclick="removeFile(${i})">✕</button></div>`).join('');
+}
+
+function removeFile(i) {
+  attachedFiles.splice(i,1);
+  renderFP();
+}
+
+async function readText(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = () => rej('fail');
+    r.readAsText(file);
+  });
+}
+
+async function readB64(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.onerror = () => rej('fail');
+    r.readAsDataURL(file);
+  });
+}
+
+// Add message
+function addMsg(role, content) {
+  const cw = document.getElementById('chat-welcome');
+  if (cw) cw.style.display = 'none';
+  const cb = document.getElementById('chat-body');
+
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}`;
+
+  const av = document.createElement('div');
+  av.className = 'av';
+  av.textContent = role === 'user' ? '👤' : 'Z';
+
+  const right = document.createElement('div');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = formatText(content);
+
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  right.appendChild(bubble);
+  right.appendChild(time);
+  wrap.appendChild(av);
+  wrap.appendChild(right);
+  cb.appendChild(wrap);
+  scrollBottom();
+}
+
+function formatText(t) {
+  return t
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,l,c) => `<pre><code>${esc(c.trim())}</code></pre>`)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Typing indicator
+function showTyping() {
+  const cw = document.getElementById('chat-welcome');
+  if (cw) cw.style.display = 'none';
+  const cb = document.getElementById('chat-body');
+  const wrap = document.createElement('div');
+  wrap.className = 'typing-wrap'; wrap.id = 'typing';
+  const av = document.createElement('div');
+  av.className = 'av'; av.textContent = 'Z';
+  av.style.cssText = 'background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 0 12px rgba(0,200,255,0.3);font-family:Orbitron,monospace;font-weight:700;';
+  const tb = document.createElement('div');
+  tb.className = 'typing-bubble';
+  tb.innerHTML = `<div class="dots"><span></span><span></span><span></span></div><span style="font-size:11px;color:var(--muted);font-family:monospace">Zael is thinking...</span>`;
+  wrap.appendChild(av); wrap.appendChild(tb);
+  cb.appendChild(wrap); scrollBottom();
+}
+
+function hideTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+// Memory extraction
+function extractMemory(userMsg) {
+  const patterns = [
+    { r: /my name is ([a-zA-Z]+)/i, key: 'Name' },
+    { r: /i am ([a-zA-Z]+ ?[a-zA-Z]*),? (?:a |an )?([a-zA-Z]+)/i, key: 'Role' },
+    { r: /i'm from ([a-zA-Z ,]+)/i, key: 'Location' },
+    { r: /i like ([a-zA-Z ,]+)/i, key: 'Likes' },
+    { r: /remember that (.+)/i, key: 'Note' },
+  ];
+  for (const p of patterns) {
+    const m = userMsg.match(p.r);
+    if (m && !memory.find(x => x.key === p.key)) {
+      memory.push({ key: p.key, value: m[1].trim() });
+    }
+  }
+}
+
+// Main send
+async function send() {
+  const text = document.getElementById('inp').value.trim();
+  if ((!text && attachedFiles.length === 0) || isLoading) return;
+
+  isLoading = true;
+  document.getElementById('sbtn').disabled = true;
+  document.getElementById('inp').value = '';
+  document.getElementById('inp').style.height = 'auto';
+
+  const filesToSend = [...attachedFiles];
+  attachedFiles = [];
+  renderFP();
+
+  const apiContent = [];
+  let displayText = text;
+
+  for (const file of filesToSend) {
+    if (file.type.startsWith('image/')) {
+      const b64 = await readB64(file);
+      apiContent.push({ type:'image', source:{ type:'base64', media_type:file.type, data:b64 } });
+      displayText = `📎 ${file.name}\n${text}`;
+    } else {
+      try {
+        const content = await readText(file);
+        apiContent.push({ type:'text', text:`\n\n[File: ${file.name}]\n${content}\n[/File]` });
+        displayText = `📎 ${file.name}\n${text}`;
+      } catch(e) {}
+    }
+  }
+
+  if (text) apiContent.push({ type:'text', text });
+
+  addMsg('user', displayText || text);
+  showTyping();
+  extractMemory(text);
+
+  const memCtx = memory.length > 0
+    ? `\n\nMemory about user: ${memory.map(m => `${m.key}: ${m.value}`).join(', ')}`
+    : '';
+
+  const messages = [...history];
+  if (apiContent.length === 1 && apiContent[0].type === 'text') {
+    messages.push({ role:'user', content:apiContent[0].text });
+  } else {
+    messages.push({ role:'user', content:apiContent });
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are Zael AI, a friendly and highly intelligent personal AI agent.
+Speak in natural, clear English. Be helpful, concise, and engaging.
+You can write code, analyze files, explain concepts, brainstorm, and search the web.
+Keep responses focused and well-structured. Use markdown for code blocks.
+${memCtx}`,
+        messages,
+        tools: [{
+          type: 'web_search_20250305',
+          name: 'web_search'
+        }]
+      })
+    });
+
+    const data = await res.json();
+    hideTyping();
+
+    if (data.error) throw new Error(data.error.message);
+
+    const reply = data.content
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('\n') || 'Something went wrong. Please try again!';
+
+    history.push({ role:'user', content: text || '[file]' });
+    history.push({ role:'assistant', content: reply });
+    if (history.length > 20) history = history.slice(-20);
+
+    addMsg('ai', reply);
+
+  } catch(err) {
+    hideTyping();
+    addMsg('ai', `<span class="err">⚠️ Error: ${err.message}</span>`);
+  }
+
+  isLoading = false;
+  document.getElementById('sbtn').disabled = false;
+  document.getElementById('inp').focus();
+}
+</script>
+</body>
+</html>
